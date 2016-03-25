@@ -1,0 +1,10 @@
+{
+  "firebase": "angular2firebase",
+  "public": "www",
+  "ignore": [
+    "firebase.json",
+    "**/.*",
+    "**/node_modules/**",
+     "**/bower_components/**"
+  ]
+}

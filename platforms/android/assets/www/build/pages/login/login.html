@@ -1,0 +1,62 @@
+
+<ion-content padding class="demo-login has-header grid-page">
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+
+    <ion-row center>
+        <ion-col width-100>
+            <h3>DemoChats</h3></ion-col>
+    </ion-row>
+    <br />
+    <br />
+    <ion-row [hidden]="!isProcessing" center>
+        <ion-col width-100> 
+             <demo-circular-progress size="50"></demo-circular-progress>
+        </ion-col>
+        <div style="color: white;">{{errorMessage}}</div>
+     </ion-row>
+     
+     <ion-row [hidden]="!isError" center>
+        <ion-col width-100> 
+             <div>{{errorMessage}}</div>
+        </ion-col>
+        
+     </ion-row>
+     
+     <div [hidden]="isProcessing">
+    <ion-row center>
+        <ion-col width-100>
+            <div>Login with</div>
+        </ion-col>
+    </ion-row>
+    <ion-row center>
+        <ion-col width-100>
+            <div>
+                <button (click)="authWithProvider('facebook')"  outline>Facebook</button>
+            </div>
+        </ion-col>
+    </ion-row>
+    <ion-row center>
+        <ion-col width-100>
+            <div>
+                <button (click)="authWithProvider('google')"  outline>Google</button>
+            </div>
+        </ion-col>
+    </ion-row>
+    <ion-row center>
+        <ion-col width-100>
+            <div>
+                <button (click)="authWithProvider('twitter')"  outline>Twitter</button>
+
+            </div>
+        </ion-col>
+    </ion-row>
+    </div>
+</ion-content>

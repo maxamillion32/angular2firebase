@@ -1,0 +1,44 @@
+
+<ion-navbar class="demo-navbar" *navbar>
+  <ion-title>
+    Settings
+  </ion-title>
+</ion-navbar>
+
+<ion-content class="page3 grid-page">
+    
+    <ion-card>
+         <ion-row center>
+            
+    <div style="margin-left:auto;margin-right:auto" item-center>
+      <img style="border-radius:50%;" src="{{user.profileImageURL}}">
+    </div>
+   
+    </ion-row>
+    
+        
+   <ion-row center>
+          
+        <ion-col width-100>
+     <ion-card-title style="text-align: center">
+      {{user.displayName}}
+      </ion-card-title>
+  </ion-col>
+    </ion-row>
+    
+  <ion-card-content>
+   
+    
+  </ion-card-content>
+  
+  <ion-item>
+    
+        <button block  outline (click)="logout()" >Logout</button>
+  </ion-item>
+
+</ion-card>
+
+
+   
+   
+</ion-content>

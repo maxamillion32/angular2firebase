@@ -1,0 +1,30 @@
+
+<ion-navbar class="demo-navbar" *navbar>
+  <ion-title>
+    Chats
+  </ion-title>
+</ion-navbar>
+
+<ion-content class="page2">
+    
+    <ion-list>
+  <ion-item *ngFor="#message of messages | mapToIterable">
+    <ion-avatar item-left>
+      <img src="{{message.val.profileImageURL}}">
+    </ion-avatar>
+    <h2>{{message.val.name}}</h2>
+    <p> {{message.val.text}}</p>
+  </ion-item>
+</ion-list>
+
+
+</ion-content>
+<ion-toolbar position="bottom">
+     <ion-input type="text" [(ngModel)]="messageText" placeholder="Type your message" #messagetext (keyup)="doneTyping($event)" ></ion-input>
+  
+  <ion-buttons end>
+       <button [disabled]="!messageText" (click)="addMessage()" clear>Send 
+      <ion-icon  name="send"></ion-icon>
+    </button>
+  </ion-buttons>
+</ion-toolbar>
