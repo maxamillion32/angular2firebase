@@ -28,7 +28,7 @@ export class FirebaseEventPipe {
         });
       } else {
         this._fbRef.on(event, snapshot => {
-          this._latestValue = snapshot.val();
+          this._latestValue =  snapshot.val();
           this._cdRef.markForCheck();
         });
       }
@@ -50,7 +50,16 @@ export class FirebaseEventPipe {
       this._fbRef.off();
     }
   }
-
+transformDict(dict: Object): Array<any> {
+    var a = [];
+    for (var key in dict) {
+      if (dict.hasOwnProperty(key)) {
+        a.push({key: key, val: dict[key]});
+      }
+    }
+    return a;
+  }
+  
   _getEventFromArgs(args?:string[]) {
     //TODO(jeffbcross): fix this when args parsing doesn't add stupid quotes
     if (args[0] && args[0][0] === '"') {

@@ -3194,7 +3194,8 @@
 	        platform.ready().then(function () {
 	            // Okay, so the platform is ready and our plugins are available.
 	            // Here you can do any higher level native things you might need.
-	            ionic_native_1.StatusBar.styleDefault();
+	            ionic_native_1.StatusBar.overlaysWebView(false);
+	            ionic_native_1.StatusBar.backgroundColorByHexString('#ce7b27');
 	        });
 	    }
 	    MyApp = __decorate([
@@ -67760,7 +67761,7 @@
 	var ionic_angular_1 = __webpack_require__(5);
 	var page1_1 = __webpack_require__(402);
 	var page2_1 = __webpack_require__(403);
-	var page3_1 = __webpack_require__(406);
+	var page3_1 = __webpack_require__(407);
 	var circularprogress_1 = __webpack_require__(404);
 	var constants_1 = __webpack_require__(405);
 	var TabsPage = (function () {
@@ -67888,6 +67889,7 @@
 	var core_1 = __webpack_require__(7);
 	var circularprogress_1 = __webpack_require__(404);
 	var constants_1 = __webpack_require__(405);
+	var firebasepipe_1 = __webpack_require__(406);
 	var MapToIterable = (function () {
 	    function MapToIterable() {
 	    }
@@ -67912,40 +67914,50 @@
 	var Page2 = (function () {
 	    function Page2() {
 	        var _this = this;
+	        this.isLoading = false;
 	        this.firebaseUrl = constants_1.Constants.FireBaseRefUrl + constants_1.Constants.Messages;
 	        this.messages = [];
 	        this.messagesRef = new Firebase(this.firebaseUrl);
+	        this.isLoading = true;
 	        this.messagesRef.onAuth(function (user) {
 	            if (user) {
 	                _this.authData = user;
 	            }
 	        });
-	        this.messagesRef.on('value', function (childSnapshot, prevChildKey) {
-	            _this.messages = childSnapshot.val();
-	            console.log(_this.messages);
-	        });
-	        // code to handle new child.
+	        this.getMessages();
 	    }
-	    Page2.prototype.hack = function (val) {
-	        console.log('Before:');
-	        console.log(val);
-	        val = Array.from(val);
-	        console.log('After:');
-	        console.log(val);
-	        return val;
+	    Page2.prototype.ngOnInit = function () {
+	        // this.scrollToBottom();
+	    };
+	    Page2.prototype.ngAfterViewChecked = function () {
+	        // this.scrollToBottom();        
+	    };
+	    Page2.prototype.getMessages = function () {
+	        var _this = this;
+	        this.messagesRef.limitToLast(50).on('value', function (childSnapshot, prevChildKey) {
+	            _this.messages = childSnapshot.val();
+	            _this.isLoading = false;
+	        });
 	    };
 	    Page2.prototype.doneTyping = function ($event) {
 	        if ($event.which === 13) {
+	            if (!this.messageText) {
+	                return;
+	            }
 	            this.addMessage(); //($event.target.value);
 	            $event.target.value = null;
 	        }
 	    };
 	    Page2.prototype.addMessage = function () {
+	        var _this = this;
 	        var user = this.convertAuthData();
 	        this.messagesRef.push({
 	            name: user.displayName,
 	            profileImageURL: user.profileImageURL,
 	            text: this.messageText
+	        }, function (error) {
+	            _this.messageText = '';
+	            _this.scrollToBottom();
 	        });
 	    };
 	    Page2.prototype.convertAuthData = function () {
@@ -67962,11 +67974,22 @@
 	        }
 	        return result;
 	    };
+	    Page2.prototype.scrollToBottom = function () {
+	        try {
+	            var listItem = document.querySelector(".page2-content scroll-content");
+	            if (listItem) {
+	                listItem.scrollTop = listItem.scrollHeight;
+	            }
+	        }
+	        catch (err) {
+	            console.log(err);
+	        }
+	    };
 	    Page2 = __decorate([
 	        ionic_angular_1.Page({
 	            templateUrl: 'build/pages/page2/page2.html',
 	            directives: [circularprogress_1.CircularProgressComponent, common_1.NgFor],
-	            pipes: [MapToIterable]
+	            pipes: [MapToIterable, firebasepipe_1.FirebaseEventPipe]
 	        }), 
 	        __metadata('design:paramtypes', [])
 	    ], Page2);
@@ -68035,9 +68058,105 @@
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(7);
+	(function (ALLOWED_FIREBASE_EVENTS) {
+	    ALLOWED_FIREBASE_EVENTS[ALLOWED_FIREBASE_EVENTS["value"] = 0] = "value";
+	    ALLOWED_FIREBASE_EVENTS[ALLOWED_FIREBASE_EVENTS["child_added"] = 1] = "child_added";
+	})(exports.ALLOWED_FIREBASE_EVENTS || (exports.ALLOWED_FIREBASE_EVENTS = {}));
+	var ALLOWED_FIREBASE_EVENTS = exports.ALLOWED_FIREBASE_EVENTS;
+	;
+	var FirebaseEventPipe = (function () {
+	    function FirebaseEventPipe(cdRef) {
+	        this._cdRef = cdRef;
+	    }
+	    FirebaseEventPipe.prototype.transform = function (value, args) {
+	        var _this = this;
+	        if (!this._fbRef) {
+	            this._fbRef = new Firebase(value);
+	            var event_1 = this._getEventFromArgs(args);
+	            if (ALLOWED_FIREBASE_EVENTS[event_1] === ALLOWED_FIREBASE_EVENTS.child_added) {
+	                this._fbRef.on(event_1, function (snapshot) {
+	                    // Wait to create array until value exists
+	                    if (!_this._latestValue)
+	                        _this._latestValue = [];
+	                    _this._latestValue.push(snapshot.val());
+	                    _this._cdRef.markForCheck();
+	                });
+	            }
+	            else {
+	                this._fbRef.on(event_1, function (snapshot) {
+	                    _this._latestValue = snapshot.val();
+	                    _this._cdRef.markForCheck();
+	                });
+	            }
+	            return null;
+	        }
+	        if (this._latestValue === this._latestReturnedValue) {
+	            return this._latestValue;
+	        }
+	        else {
+	            this._latestReturnedValue = this._latestValue;
+	            return core_1.WrappedValue.wrap(this._latestReturnedValue);
+	        }
+	        //return null;
+	    };
+	    FirebaseEventPipe.prototype.onDestroy = function () {
+	        if (this._fbRef) {
+	            this._fbRef.off();
+	        }
+	    };
+	    FirebaseEventPipe.prototype.transformDict = function (dict) {
+	        var a = [];
+	        for (var key in dict) {
+	            if (dict.hasOwnProperty(key)) {
+	                a.push({ key: key, val: dict[key] });
+	            }
+	        }
+	        return a;
+	    };
+	    FirebaseEventPipe.prototype._getEventFromArgs = function (args) {
+	        //TODO(jeffbcross): fix this when args parsing doesn't add stupid quotes
+	        if (args[0] && args[0][0] === '"') {
+	            args[0] = args[0].replace(/"/g, '');
+	        }
+	        if (args && typeof ALLOWED_FIREBASE_EVENTS[args[0]] === 'number') {
+	            return args[0];
+	        }
+	        throw "Not a valid event to listen to: " + args[0] + ".\n      Please provide a valid event, such as \"child_added\", by adding it as an\n      argument to the pipe: \"value | firebase:child_added\".\n      See https://www.firebase.com/docs/web/api/query/on.html for supported events.";
+	    };
+	    FirebaseEventPipe = __decorate([
+	        core_1.Pipe({
+	            name: 'firebaseevent',
+	            pure: false
+	        }),
+	        __param(0, core_1.Inject(core_1.ChangeDetectorRef)), 
+	        __metadata('design:paramtypes', [core_1.ChangeDetectorRef])
+	    ], FirebaseEventPipe);
+	    return FirebaseEventPipe;
+	}());
+	exports.FirebaseEventPipe = FirebaseEventPipe;
+
+
+/***/ },
+/* 407 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
 	var ionic_angular_1 = __webpack_require__(5);
 	var constants_1 = __webpack_require__(405);
-	var login_1 = __webpack_require__(407);
+	var login_1 = __webpack_require__(408);
 	var Page3 = (function () {
 	    function Page3(nav) {
 	        var _this = this;
@@ -68068,6 +68187,11 @@
 	    Page3.prototype.logout = function () {
 	        this.isSigningOut = true;
 	        this.authRef.unauth();
+	        if (window && window.cookies) {
+	            window.cookies.clear(function () {
+	                console.log("Cookies cleared!");
+	            });
+	        }
 	        var modal = ionic_angular_1.Modal.create(login_1.Login);
 	        this.nav.present(modal);
 	    };
@@ -68083,7 +68207,7 @@
 
 
 /***/ },
-/* 407 */
+/* 408 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";

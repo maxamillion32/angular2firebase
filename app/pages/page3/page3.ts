@@ -1,9 +1,11 @@
 import {Page, NavController, Modal} from 'ionic-angular';
 import {Constants} from '../../core/constants';
 import {Login} from '../login/login';
+declare var window;
 @Page({
   templateUrl: 'build/pages/page3/page3.html'
 })
+
 export class Page3 {
       authRef : Firebase;
     isSigningOut: boolean = false;
@@ -41,6 +43,12 @@ export class Page3 {
      logout(){
         this.isSigningOut = true;
         this.authRef.unauth();
+        if(window && window.cookies)
+        {
+        window.cookies.clear(() => {
+            console.log("Cookies cleared!");
+        });
+        }
          let modal = Modal.create(Login);
          this.nav.present(modal)
     }

@@ -1,8 +1,8 @@
 
-<ion-tabs *ngIf="isLoggedIn"  tabbarPlacement="bottom" >
+<ion-tabs *ngIf="isLoggedIn" class="demo-tabs-wrapper" tabbarPlacement="bottom" >
   <ion-tab [root]="tab1Root"  tabIcon="home"></ion-tab>
   <ion-tab [root]="tab2Root"  tabIcon="chatbubbles"></ion-tab>
-  <ion-tab [root]="tab3Root"  tabIcon="cog"></ion-tab>
+  <ion-tab [root]="tab3Root"  tabIcon="person"></ion-tab>
 </ion-tabs>
 
 
@@ -14,18 +14,22 @@
     <br />
     <br />
     <br />
+   
+     <ion-row center>
+<div style="margin-left:auto;margin-right:auto" item-center>
+      <img  src="build/imgs/Precio_logga.png">
+    </div>
+     </ion-row> <br />
     <br />
-    <br />
-
     <ion-row center>
         <ion-col width-100>
-            <h3>DemoChats</h3></ion-col>
+            <h3>Demo App</h3></ion-col>
     </ion-row>
     <br />
     <br />
     <ion-row [hidden]="!isProcessing" center>
         <ion-col width-100> 
-             <demo-circular-progress size="50"></demo-circular-progress>
+             <demo-circular-progress size="40"></demo-circular-progress>
         </ion-col>
         <div style="color: white;">{{errorMessage}}</div>
      </ion-row>
