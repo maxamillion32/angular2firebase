@@ -1,0 +1,18 @@
+[debug] ----------------------------------------------------------------------
+[debug] Command:      /usr/local/bin/node /usr/local/bin/firebase deploy
+[debug] Platform:     darwin
+[debug] Node Version: v5.1.0
+[debug] Time:         Tue Mar 29 2016 20:27:52 GMT+0700 (ICT)
+[debug] ----------------------------------------------------------------------
+[debug] 
+[debug] >>> HTTP REQUEST GET https://admin.firebase.com/firebase/angular2firebase/token?token=XXX 
+[debug] <<< HTTP RESPONSE 200
+[debug] >>> HTTP REQUEST GET https://admin.firebase.com/firebase/angular2firebase/token?token=XXX 
+[debug] <<< HTTP RESPONSE 200
+[info] 
+[info] === Deploying to 'angular2firebase'...
+[info] 
+[info] i  deploying hosting
+[info] i  preparing www directory for upload...
+[debug] >>> HTTP REQUEST PUT https://deploy.firebase.com/firebase/angular2firebase/uploads/-KE1YmQXgcoQVMMyXIz2?token=XXX&fileCount=30&message= 
+[debug] <<< HTTP RESPONSE 200
